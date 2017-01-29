@@ -3,7 +3,6 @@ BasicGame.Preloader = function (game) {
 
 	this.background = null;
 	this.preloadBar = null;
-
 	this.ready = false;
 
 };
@@ -16,7 +15,7 @@ BasicGame.Preloader.prototype = {
 	},
 
 	preload: function () {
-
+		
 		//	These are the assets we loaded in Boot.js				
 		this.preloadBar = this.add.sprite(this.game.width / 2, this.game.height / 2, 'preloaderBar');		
 		this.preloadBar.anchor.setTo(0.5);
@@ -31,6 +30,15 @@ BasicGame.Preloader.prototype = {
 		//	You can find all of these assets in the Phaser Examples repository
 
 		this.load.image('starfield', 'assets/images/starfield.png');
+
+		// Load Levels config
+		this.game.global.levels = this.cache.getJSON('levels');
+		console.log(this.game.global.levels);
+		// Load level backgrounds
+		for (var i in this.game.global.levels) {
+			var stage = this.game.global.levels[i];
+			this.load.image('background'+i, stage.background);
+		}
 
 		// Audio track Attribution (menu sci-fi 1.ogg, CC 3.0)
 		// Alexandr-Zhelanov: https://soundcloud.com/alexandr-zhelanov 
