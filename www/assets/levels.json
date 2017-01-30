@@ -4,8 +4,9 @@
     "parachutes": {
         "type": "1",
         "speed": 10000,
-        "count": 6,
-        "maxHealth": 20
+        "count": 18,
+        "maxHealth": 20,
+        "gravity": 200
       }
   }
 ]
