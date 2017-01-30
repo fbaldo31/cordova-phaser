@@ -1,13 +1,11 @@
 [
   {
     "background":"assets/images/background0.jpg",
-    "parachutes": [
-      {
+    "parachutes": {
         "type": "1",
-        "speed": 1000,
+        "speed": 10000,
         "count": 6,
         "maxHealth": 20
       }
-    ]
   }
 ]

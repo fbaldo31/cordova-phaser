@@ -34,6 +34,7 @@ BasicGame.Game = function (game) {
     };
     this.sendParachutes = function () {
         var speed = this.levelData.parachutes.speed;
+        console.log(speed);
         var parachute = this.game.add.sprite(this.game.width / Math.floor(this.rnd), 50 /*this.setRandomY(), this.game.height-10*/, 'parachute');
         parachute.scale.setTo(1, 1);
 
@@ -46,6 +47,7 @@ BasicGame.Game = function (game) {
         parachute.animations.play('fall');
         //parachute.animations.play('dance');
 
+        // Method for animation: target  -  direction                    -  type                               - loop
         this.game.add.tween(parachute).to({ y: this.game.height }, speed, Phaser.Easing.Linear.None, true, 0, 0, false);
         
         this.totalParachutes++;
@@ -64,7 +66,7 @@ BasicGame.Game.prototype = {
         this.add.sprite(this.width / 2, this.height / 2, 'background' + this.level);
         
         // boat
-        boat = this.add.sprite(this.game.width / 2, this.game.height - 150, 'boat');
+        boat = this.add.sprite(this.game.width / 2, this.game.height - 180, 'boat');
         
         // Parachutes
         this.sendParachutes();
