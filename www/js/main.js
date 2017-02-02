@@ -3,7 +3,9 @@ document.addEventListener("deviceready", onDeviceReady, false);
 var game = new Phaser.Game("100%", "100%", Phaser.AUTO);
 game.global = {
     //Global Vars
-	levels: []
+	levels: [],
+	points: 0,
+	life: 100
 };
 
 //	Add the States your game has.

@@ -4,7 +4,6 @@ BasicGame.Preloader = function (game) {
 	this.background = null;
 	this.preloadBar = null;
 	this.ready = false;
-
 };
 
 BasicGame.Preloader.prototype = {
@@ -43,22 +42,17 @@ BasicGame.Preloader.prototype = {
 		// Audio track Attribution (menu sci-fi 1.ogg, CC 3.0)
 		// Alexandr-Zhelanov: https://soundcloud.com/alexandr-zhelanov 
 		this.load.audio('bgm', ['assets/audio/menusci-fi1.ogg', 'assets/audio/menusci-fi1.mp3']);
-
 	},
 
 	create: function () {
 
-
 		//this.state.start('MainMenu');
-
-
 	},
 	update: function () {
 
 		if (this.cache.isSoundDecoded('bgm') && this.ready == false) {
 			this.ready = true;
 			this.state.start('MainMenu');
-
 		}
 	}
 

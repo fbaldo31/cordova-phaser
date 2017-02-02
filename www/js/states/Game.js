@@ -23,52 +23,39 @@ BasicGame.Game = function (game) {
     //	But do consider them as being 'reserved words', i.e. don't create a property for your own game called "world" or you'll over-write the world reference.
 
     // Custom
+    this.levelData;
     this.totalParachutes;
+    this.points;
+    this.life;
+    this.bmpText;
+    this.font;
+    this.falling;
     
     this.setRandomY = function () {
         return Math.floor(Math.random() * this.game.width +1);
     };
-    this.sendParachutes = function () {
-        var speed = this.levelData.parachutes.speed;
-        console.log(speed);
-        var parachute = this.game.add.sprite(this.setRandomY(), 0, 'parachute');
-        parachute.scale.setTo(1, 1);
-        //  If you prefer to work in degrees rather than radians then you can use Phaser.Sprite.angle
-        //  otherwise use Phaser.Sprite.rotation
+    this.launchMe = function (parachute) {
         parachute.angle = this.game.rnd.angle();
-
         // Make the sprite solid in the stage (and gravity has effect ...)
         this.game.physics.enable(parachute, Phaser.Physics.ARCADE);
         this.game.physics.arcade.collide(parachute);
-        
-        // Handle the on touch event
-        parachute.body.onCollide = new Phaser.Signal();
-        parachute.body.onCollide.add(this.saved, this);
-
-        // Method for animation: target  -  direction                    -  type                               - loop
-        var currentGame = this.game;
-
-        this.totalParachutes++;
-
-        return parachute;
     };
-    this.saved = function (parachute) {
-        parachute.destroy();
-    }
 };
 BasicGame.Game.prototype = {
 
 	create: function () {
-        
         this.level      = this.level || 0;
         this.levelData  = this.game.global.levels[this.level];
-        this.points     = 0;
+        // this.points     = localStorage.getItem('points') || 0;
+        this.game.global.life = this.levelData.health;
         this.totalParachutes = 0;
+        this.falling    = [];
         timer = this.game.time.now + 100;
 
         // Background
         this.add.sprite(this.width / 2, this.height / 2, 'background' + this.level);
-        
+        // Font
+        this.font = { font: "45px Arial", fill: "#ff0044", align: "center" };
         //  Set the stage (global) gravity
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
         this.game.physics.arcade.gravity.y = this.levelData.parachutes.gravity;
@@ -76,27 +63,32 @@ BasicGame.Game.prototype = {
         // boat                    x axis              y axis             index in Phaser cache
         boat = this.add.sprite(this.game.width / 2, this.game.height - 180, 'boat');
                 
-        // Parachutes
-        var parachute = this.sendParachutes;
-        console.log(parachute);
+        // parachute
+        parachute = new Parachute(this.game, this.setRandomY(), this.game.height/2);
+        // and add it to the game
+        this.game.add.existing(parachute);
+        this.falling.push(parachute);
+        
         // Physics
         this.game.physics.enable(boat, Phaser.Physics.ARCADE);
         this.game.physics.enable(parachute, Phaser.Physics.ARCADE);
-        boat.body.checkCollision.up = true;
+        boat.body.checkCollision.up = false; // Allow parachutes pass over
         boat.body.allowGravity = false; // Prevent from fall out of the bottom
-        // parachute.body.checkCollision.down = true;
-
-        boat.body.collideWorldBounds = true;
         boat.body.collideWorldBounds = true;
     },
 
 	update: function () {
-
-		//	Launch Parachute
+        
+		//	Launch Parachutes
         if (this.totalParachutes < this.levelData.parachutes.count && game.time.now < timer) {
-            this.game.time.events.loop(Phaser.Timer.SECOND, this.sendParachutes, this);
+            this.game.time.events.loop(3000, function () {
+                var parachute = new Parachute(this.game, this.setRandomY(), this.game.height/2);
+                this.game.add.existing(parachute);
+                this.launchMe(parachute);
+                this.falling.push(parachute);
+            }, this);
         }
-
+        
         // Move the boat
         if (this.game.input.keyboard.isDown(Phaser.Keyboard.LEFT)) {
             boat.x -= 4;
@@ -106,23 +98,31 @@ BasicGame.Game.prototype = {
             boat.x += 4;
             boat.scale.setTo(1, 1);
         }
-
-        this.game.physics.arcade.collide(boat);
-        // parachute.body.onCollide = new Phaser.Signal();
-        // parachute.body.onCollide.add(this.saved, this);
+        this.falling.forEach(function (parachute, index) {
+            this.game.physics.arcade.collide(boat, parachute);
+        });
 	},
     /**
      *  Display data on screen
      */
     render: function () {
-        this.game.debug.bodyInfo(boat);
-        //this.game.debug.bodyInfo(parachute);
+        
+        this.bmpText = this.game.add.text(50, 30, this.game.global.points, this.font);
+        //this.game.debug.bodyInfo(boat);
+        this.game.debug.text('Score: ' + this.game.global.points);
+        
+        // this.falling.forEach(function (value, index) {
+        //     if (value.body.onCollide) {
+        //         console.log(index, value.onCollide);
+        //     }
+        //     value.game.debug.body(value);
+        // });
     },
 	quitGame: function (pointer) {
 
 		//	Here you should destroy anything you no longer need.
 		//	Stop music, delete sprites, purge caches, free resources, all that good stuff.
-
+        boat.destroy();
 		//	Then let's go back to the main menu.
 		this.state.start('MainMenu');
 
