@@ -27,7 +27,7 @@ BasicGame.Game = function (game) {
     this.totalParachutes;
     this.points;
     this.life;
-    this.bmpText;
+    this.scoreText;
     this.font;
     this.falling;
     
@@ -48,19 +48,27 @@ BasicGame.Game.prototype = {
         this.levelData  = this.game.global.levels[this.level];
         // this.points     = localStorage.getItem('points') || 0;
         this.game.global.life = this.levelData.health;
+        this.game.global.points = 0;
         this.totalParachutes = 0;
         this.falling    = [];
+        
         timer = this.game.time.now + 100;
 
         // Background
         this.add.sprite(this.width / 2, this.height / 2, 'background' + this.level);
-        // Font
-        this.font = { font: "45px Arial", fill: "#ff0044", align: "center" };
+        
         //  Set the stage (global) gravity
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
         this.game.physics.arcade.gravity.y = this.levelData.parachutes.gravity;
 
-        // boat                    x axis              y axis             index in Phaser cache
+        // Score
+        this.font = { font: "28px Arial", fill: "#000000", align: "left" };
+        this.game.global.scoreText = this.game.add.text(40, 40, 'Score: 0', this.font);
+        console.log(this.scoreText);
+        
+        // boat                    x axis
+        //              y axis             index in Phaser cache
+        //              y axis             index in Phaser cache
         boat = this.add.sprite(this.game.width / 2, this.game.height - 180, 'boat');
                 
         // parachute
@@ -101,15 +109,20 @@ BasicGame.Game.prototype = {
         this.falling.forEach(function (parachute, index) {
             this.game.physics.arcade.collide(boat, parachute);
         });
+
+        // Display score
+        // this.scoreText = this.game.add.text(50, 30, 'Score: ' + this.game.global.points, this.font);
+        // this.scoreText.anchor.setTo(0.5,0.5);
+        // this.scoreText.fixedToCamera = true;
 	},
     /**
      *  Display data on screen
      */
     render: function () {
         
-        this.bmpText = this.game.add.text(50, 30, this.game.global.points, this.font);
+        
         //this.game.debug.bodyInfo(boat);
-        this.game.debug.text('Score: ' + this.game.global.points);
+        // this.game.debug.text('Score: ' + this.game.global.points);
         
         // this.falling.forEach(function (value, index) {
         //     if (value.body.onCollide) {

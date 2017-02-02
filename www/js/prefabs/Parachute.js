@@ -38,16 +38,18 @@ Parachute.prototype.saved = function () {
     // var points = localStorage.getItem('points') || 0;
     // points++;
     this.game.global.points = this.game.global.points + newPoint;
+    this.game.global.scoreText.text = 'Score: '+ this.game.global.points;
     console.log('+1 Point', this.game.global.points);
 
+    this.kill();
     // this.game.time.events(500, function() {
-    //     this.destroy();
+    //     this.kill();
     // });
 };
 Parachute.prototype.died = function () {
     this.game.global.life--;
     console.log('Dead -1 point');
-    this.destroy();
+    this.kill();
 };
 //
 // module.exports = Parachute;

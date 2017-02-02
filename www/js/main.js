@@ -5,7 +5,8 @@ game.global = {
     //Global Vars
 	levels: [],
 	points: 0,
-	life: 100
+	life: 100,
+	scoreText: {}
 };
 
 //	Add the States your game has.
