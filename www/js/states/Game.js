@@ -27,10 +27,7 @@ BasicGame.Game = function (game) {
     this.totalParachutes;
     this.font;
     this.falling;
-    
-    this.setRandomY = function () {
-        return Math.floor(Math.random() * this.game.width +1);
-    };
+
     this.launchMe = function (parachute) {
         parachute.angle = this.game.rnd.angle();
         // Make the sprite solid in the stage (and gravity has effect ...)
@@ -41,8 +38,7 @@ BasicGame.Game = function (game) {
 BasicGame.Game.prototype = {
 
 	create: function () {
-        this.level      = this.level || 0;
-        this.levelData  = this.game.global.levels[this.level];
+        this.levelData  = this.game.global.levels[this.global.currentLevel];
         this.game.global.life = this.levelData.health;
         this.game.global.points = 0;
         this.totalParachutes = 0;
@@ -67,7 +63,7 @@ BasicGame.Game.prototype = {
         boat = this.add.sprite(this.game.width / 2, this.game.height - 180, 'boat');
                 
         // parachute
-        parachute = new Parachute(this.game, this.setRandomY(), this.game.height/2);
+        parachute = new Parachute(this.game, this.game.world.randomY, this.game.height/2);
         // and add it to the game
         this.game.add.existing(parachute);
         this.falling.push(parachute);
@@ -85,7 +81,7 @@ BasicGame.Game.prototype = {
 		//	Launch Parachutes
         if (this.totalParachutes < this.levelData.parachutes.count && game.time.now < timer) {
             this.game.time.events.loop(3000, function () {
-                var parachute = new Parachute(this.game, this.setRandomY(), this.game.height/2);
+                var parachute = new Parachute(this.game, this.game.world.randomY, this.game.height/2);
                 this.game.add.existing(parachute);
                 this.launchMe(parachute);
                 this.falling.push(parachute);
@@ -111,14 +107,12 @@ BasicGame.Game.prototype = {
 
         // Lose the stage
         if (this.game.global.life == 0){
-            console.log('game over :(');
             this.quitGame();
         }
 
         // Win the stage
         if (this.game.global.points == this.levelData.minScore) {
-            console.log('Won !');
-            this.quitGame();
+            this.gotToNextLevel();
         }
 	},
     /**
@@ -145,9 +139,23 @@ BasicGame.Game.prototype = {
             parachute.destroy();
         });
 		//	Then let's go back to the main menu.
-		this.state.start('MainMenu');
+		this.state.start('GameOver');
 	},
     pauseOrResumeGame: function (event){
         this.game.paused = !this.game.paused;
+    },
+    gotToNextLevel: function (pointer) {
+        // destroy all sprites
+        boat.destroy();
+        this.falling.forEach(function (parachute, index) {
+            parachute.destroy();
+        });
+        
+        // Change level
+        // This commented because in this sample, only one level is available
+        // this.game.global.currentLevel++;
+        
+        //	Then let's go to menu.
+        this.state.start('NextLevel');
     }
 };

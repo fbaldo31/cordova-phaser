@@ -1,11 +1,12 @@
 
-BasicGame.MainMenu = function (game) {
+BasicGame.GameOver = function (game) {
 
 	// this.bg;
 	this.music = null;
+
 };
 
-BasicGame.MainMenu.prototype = {
+BasicGame.GameOver.prototype = {
 
 	create: function () {
 
@@ -19,11 +20,16 @@ BasicGame.MainMenu.prototype = {
 		// Background color
 		this.game.stage.backgroundColor = "#6DCC61";
 
-		var text = this.add.text(this.game.width * 0.5, this.game.height * 0.5, 'Tap to Start!', {
+		var gameOverText = this.add.text(this.game.width * 0.5, this.game.height * 0.4, 'Game Over !', {
 			font: '42px Arial', fill: '#ffffff', align: 'center'
 		});
-		text.anchor.set(0.5);
+		gameOverText.anchor.set(0.5);
 
+		var startText = this.add.text(this.game.width * 0.5, this.game.height * 0.6, 'Tap to Start', {
+			font: '42px Arial', fill: '#ffffff', align: 'center'
+		});
+		startText.anchor.set(0.5);
+		
 		this.input.onDown.add(this.startGame, this);
 
 

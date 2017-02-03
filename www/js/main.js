@@ -7,7 +7,8 @@ game.global = {
 	points: 0,
 	life: 100,
 	scoreText: {},
-	lifeText: {}
+	lifeText: {},
+	currentLevel = 0;
 };
 
 //	Add the States your game has.
@@ -15,6 +16,8 @@ game.global = {
 	game.state.add('Boot', BasicGame.Boot);
 	game.state.add('Preloader', BasicGame.Preloader);
 	game.state.add('MainMenu', BasicGame.MainMenu);
+	game.state.add('NextLevel', BasicGame.NextLevel);
+	game.state.add('GameOver', BasicGame.GameOver);
 	game.state.add('Game', BasicGame.Game);
 
 function onDeviceReady() {

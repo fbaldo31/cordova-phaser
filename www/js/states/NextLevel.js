@@ -1,11 +1,12 @@
 
-BasicGame.MainMenu = function (game) {
+BasicGame.NextLevel = function (game) {
 
 	// this.bg;
 	this.music = null;
+
 };
 
-BasicGame.MainMenu.prototype = {
+BasicGame.NextLevel.prototype = {
 
 	create: function () {
 
@@ -19,14 +20,17 @@ BasicGame.MainMenu.prototype = {
 		// Background color
 		this.game.stage.backgroundColor = "#6DCC61";
 
-		var text = this.add.text(this.game.width * 0.5, this.game.height * 0.5, 'Tap to Start!', {
+		var winnerText = this.add.text(this.game.width * 0.5, this.game.height * 0.4, 'Congratulations ! You won', {
 			font: '42px Arial', fill: '#ffffff', align: 'center'
 		});
-		text.anchor.set(0.5);
+		winnerText.anchor.set(0.5);
 
+		var startText = this.add.text(this.game.width * 0.5, this.game.height * 0.6, 'Tap to Start', {
+			font: '42px Arial', fill: '#ffffff', align: 'center'
+		});
+		startText.anchor.set(0.5);
+		
 		this.input.onDown.add(this.startGame, this);
-
-
 	},
 
 	update: function () {

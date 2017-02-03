@@ -28,7 +28,7 @@ BasicGame.Preloader.prototype = {
 		//	Here we load the rest of the assets our game needs.
 		//	You can find all of these assets in the Phaser Examples repository
 
-		this.load.image('starfield', 'assets/images/starfield.png');
+		this.load.image('menu_bg', 'assets/images/menu_background.png');
 
 		// Load Levels config
 		this.game.global.levels = this.cache.getJSON('levels');
