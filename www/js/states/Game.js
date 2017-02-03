@@ -25,9 +25,6 @@ BasicGame.Game = function (game) {
     // Custom
     this.levelData;
     this.totalParachutes;
-    this.points;
-    this.life;
-    this.scoreText;
     this.font;
     this.falling;
     
@@ -46,7 +43,6 @@ BasicGame.Game.prototype = {
 	create: function () {
         this.level      = this.level || 0;
         this.levelData  = this.game.global.levels[this.level];
-        // this.points     = localStorage.getItem('points') || 0;
         this.game.global.life = this.levelData.health;
         this.game.global.points = 0;
         this.totalParachutes = 0;
@@ -62,13 +58,12 @@ BasicGame.Game.prototype = {
         this.game.physics.arcade.gravity.y = this.levelData.parachutes.gravity;
 
         // Score
-        this.font = { font: "28px Arial", fill: "#000000", align: "left" };
+        this.font = { font: "28px Arial", fill: "#ffc500", align: "left" };
         this.game.global.scoreText = this.game.add.text(40, 40, 'Score: 0', this.font);
-        console.log(this.scoreText);
+        // Life
+        this.game.global.lifeText = this.game.add.text(40, 70, 'Life: '+ this.game.global.life, this.font);
         
-        // boat                    x axis
-        //              y axis             index in Phaser cache
-        //              y axis             index in Phaser cache
+        // boat                    x axis       y axis             index in Phaser cache
         boat = this.add.sprite(this.game.width / 2, this.game.height - 180, 'boat');
                 
         // parachute
@@ -109,20 +104,30 @@ BasicGame.Game.prototype = {
         this.falling.forEach(function (parachute, index) {
             this.game.physics.arcade.collide(boat, parachute);
         });
+        
+        // Pause
+        // we wait fort tap event: callback reference      event
+        this.game.input.onDown.add(this.pauseOrResumeGame, this);
 
-        // Display score
-        // this.scoreText = this.game.add.text(50, 30, 'Score: ' + this.game.global.points, this.font);
-        // this.scoreText.anchor.setTo(0.5,0.5);
-        // this.scoreText.fixedToCamera = true;
+        // Lose the stage
+        if (this.game.global.life == 0){
+            console.log('game over :(');
+            this.quitGame();
+        }
+
+        // Win the stage
+        if (this.game.global.points == this.levelData.minScore) {
+            console.log('Won !');
+            this.quitGame();
+        }
 	},
     /**
      *  Display data on screen
+     *  Uncomment these lines for debug data of sprites
      */
     render: function () {
         
-        
         //this.game.debug.bodyInfo(boat);
-        // this.game.debug.text('Score: ' + this.game.global.points);
         
         // this.falling.forEach(function (value, index) {
         //     if (value.body.onCollide) {
@@ -136,8 +141,13 @@ BasicGame.Game.prototype = {
 		//	Here you should destroy anything you no longer need.
 		//	Stop music, delete sprites, purge caches, free resources, all that good stuff.
         boat.destroy();
+        this.falling.forEach(function (parachute, index) {
+            parachute.destroy();
+        });
 		//	Then let's go back to the main menu.
 		this.state.start('MainMenu');
-
-	}
+	},
+    pauseOrResumeGame: function (event){
+        this.game.paused = !this.game.paused;
+    }
 };

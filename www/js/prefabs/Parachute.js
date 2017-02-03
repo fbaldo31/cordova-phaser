@@ -19,7 +19,7 @@ Parachute.prototype.constructor = Parachute;
 
 Parachute.prototype.update = function() {
 
-    // write your prefab’s specific update code here
+    // Write your prefab’s specific update code here
     this.game.physics.arcade.collide(parachute);
     this.body.checkCollision.down = true;
     this.body.checkCollision.up = true;
@@ -31,25 +31,20 @@ Parachute.prototype.update = function() {
     this.body.onCollide.add(Parachute.prototype.saved, this);
 
     //  This makes the game world bounce-able
+    this.checkWorldBounds = true;
     this.events.onOutOfBounds.add(Parachute.prototype.died, this);
 };
 Parachute.prototype.saved = function () {
-    var newPoint = 1;
-    // var points = localStorage.getItem('points') || 0;
-    // points++;
-    this.game.global.points = this.game.global.points + newPoint;
+    this.game.global.points++;
     this.game.global.scoreText.text = 'Score: '+ this.game.global.points;
-    console.log('+1 Point', this.game.global.points);
 
     this.kill();
-    // this.game.time.events(500, function() {
-    //     this.kill();
-    // });
 };
 Parachute.prototype.died = function () {
     this.game.global.life--;
-    console.log('Dead -1 point');
+    this.game.global.lifeText.text = 'Life: '+ this.game.global.life;
+
     this.kill();
 };
-//
+
 // module.exports = Parachute;

@@ -6,7 +6,8 @@ game.global = {
 	levels: [],
 	points: 0,
 	life: 100,
-	scoreText: {}
+	scoreText: {},
+	lifeText: {}
 };
 
 //	Add the States your game has.

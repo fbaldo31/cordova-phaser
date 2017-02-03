@@ -2,6 +2,7 @@
   {
     "background":"assets/images/background0.jpg",
     "health": 20,
+    "minScore":  10,
     "parachutes": {
         "type": "1",
         "speed": 10000,
