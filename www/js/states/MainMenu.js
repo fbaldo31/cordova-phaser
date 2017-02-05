@@ -13,14 +13,14 @@ BasicGame.MainMenu.prototype = {
         this.music.loop = true;
         this.music.play();
 
-		// Backgroung image
+		// Background image
 		// this.bg = this.add.tileSprite(0, 0, this.game.width, this.game.height, 'menu_bg');
 
 		// Background color
 		this.game.stage.backgroundColor = "#6DCC61";
 
-		//water
-		water = this.add.sprite(this.game.width * 0.35, this.game.height - 130, 'water');
+		// Mountain
+		mountain = this.add.sprite(0, this.game.height /2, 'mountain');
 		
 		// Parachute 
 		parachute = this.add.sprite(this.game.width * 0.5, 180, 'para_menu');

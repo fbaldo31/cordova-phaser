@@ -32,6 +32,7 @@ BasicGame.Preloader.prototype = {
 		this.load.image('logo', 'assets/images/logo.png');
 		this.load.image('para_menu', 'assets/images/para-menu.png');
 		this.load.image('water', 'assets/images/water.png');
+		this.load.image('mountain', 'assets/images/mountain.png');
 
 		// Load Levels config
 		this.game.global.levels = this.cache.getJSON('levels');
