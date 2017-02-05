@@ -9,9 +9,19 @@ var Parachute = function(game, x, y, frame) {
 
     // initialize your prefab here
     this.scale.setTo(1, 1);
-    // parachute.angle = game.rnd.angle();
+    parachute.angle = this.game.rnd.angle();
+    
     // Add a physic body
     this.game.physics.arcade.enableBody(this);
+
+    // Make the sprite solid in the stage (and gravity has effect ...)
+    this.game.physics.enable(parachute, Phaser.Physics.ARCADE);
+    this.game.physics.arcade.collide(parachute);
+
+    this.animations.add('balance', [0, 1, 2, 3]);
+    this.frame = 0;
+    console.log(this.animations);
+    this.animations.play('balance', 3, true);
 };
 
 Parachute.prototype = Object.create(Phaser.Sprite.prototype);

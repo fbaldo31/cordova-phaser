@@ -16,7 +16,9 @@ BasicGame.Boot.prototype = {
 
         //  This tells the game to resize the renderer to match the game dimensions (i.e. 100% browser width / height)
         this.scale.scaleMode = Phaser.ScaleManager.RESIZE;
-
+        this.scale.setResizeCallback(function () {
+            this.scale.scaleMode = Phaser.ScaleManager.RESIZE;
+        }, this);
     },
 
     preload: function () {
@@ -25,7 +27,8 @@ BasicGame.Boot.prototype = {
         //this.load.image('preloaderBackground', 'assets/images/preloader_background.jpg');
         this.load.image('preloaderBar', 'assets/images/preloadr_bar.png');
         this.load.json('levels', 'assets/levels.json');
-        this.load.image('parachute', 'assets/images/parachute.png');
+        // To load sprite sheets               we tell for each: height, width, number (optional)
+        this.load.spritesheet('parachute', 'assets/images/parachute.png', 50, 50);
         this.load.image('boat', 'assets/images/boat.png');
     },
 

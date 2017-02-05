@@ -5,9 +5,20 @@
     "minScore":  10,
     "parachutes": {
         "type": "1",
-        "speed": 10000,
+        "speed": 15000,
         "count": 18,
         "gravity": 200
       }
+  },
+  {
+    "background":"assets/images/background1.jpg",
+    "health": 20,
+    "minScore":  10,
+    "parachutes": {
+      "type": "1",
+      "speed": 10000,
+      "count": 18,
+      "gravity": 200
+    }
   }
 ]

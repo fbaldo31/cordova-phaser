@@ -29,6 +29,9 @@ BasicGame.Preloader.prototype = {
 		//	You can find all of these assets in the Phaser Examples repository
 
 		this.load.image('menu_bg', 'assets/images/menu_background.png');
+		this.load.image('logo', 'assets/images/logo.png');
+		this.load.image('para_menu', 'assets/images/para-menu.png');
+		this.load.image('water', 'assets/images/water.png');
 
 		// Load Levels config
 		this.game.global.levels = this.cache.getJSON('levels');
@@ -39,9 +42,9 @@ BasicGame.Preloader.prototype = {
 			this.load.image('background'+i, stage.background);
 		}
 
-		// Audio track Attribution (menu sci-fi 1.ogg, CC 3.0)
-		// Alexandr-Zhelanov: https://soundcloud.com/alexandr-zhelanov 
-		this.load.audio('bgm', ['assets/audio/menusci-fi1.ogg', 'assets/audio/menusci-fi1.mp3']);
+		// Audio track Attribution 
+		this.load.audio('menuMusic', ['assets/audio/beat1.ogg']);
+		this.load.audio('music0', ['assets/audio/campfire.mp3']);
 	},
 
 	create: function () {
@@ -50,7 +53,7 @@ BasicGame.Preloader.prototype = {
 	},
 	update: function () {
 
-		if (this.cache.isSoundDecoded('bgm') && this.ready == false) {
+		if (this.cache.isSoundDecoded('menuMusic') && this.ready == false) {
 			this.ready = true;
 			this.state.start('MainMenu');
 		}

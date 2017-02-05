@@ -10,7 +10,7 @@ BasicGame.GameOver.prototype = {
 
 	create: function () {
 
-		this.music = this.add.audio('bgm');
+		this.music = this.add.audio('menuMusic');
         this.music.loop = true;
         this.music.play();
 

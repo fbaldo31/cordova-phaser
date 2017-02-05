@@ -9,7 +9,7 @@ BasicGame.MainMenu.prototype = {
 
 	create: function () {
 
-		this.music = this.add.audio('bgm');
+		this.music = this.add.audio('menuMusic');
         this.music.loop = true;
         this.music.play();
 
@@ -18,6 +18,15 @@ BasicGame.MainMenu.prototype = {
 
 		// Background color
 		this.game.stage.backgroundColor = "#6DCC61";
+
+		//water
+		water = this.add.sprite(this.game.width * 0.35, this.game.height - 130, 'water');
+		
+		// Parachute 
+		parachute = this.add.sprite(this.game.width * 0.5, 180, 'para_menu');
+
+		// boat                    x axis       y axis             index in Phaser cache
+		boat = this.add.sprite(this.game.width * 0.5, this.game.height - 180, 'boat');
 
 		var text = this.add.text(this.game.width * 0.5, this.game.height * 0.5, 'Tap to Start!', {
 			font: '42px Arial', fill: '#ffffff', align: 'center'

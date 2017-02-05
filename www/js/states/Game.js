@@ -23,47 +23,47 @@ BasicGame.Game = function (game) {
     //	But do consider them as being 'reserved words', i.e. don't create a property for your own game called "world" or you'll over-write the world reference.
 
     // Custom
+    this.scale;
     this.levelData;
     this.totalParachutes;
     this.font;
     this.falling;
-
-    this.launchMe = function (parachute) {
-        parachute.angle = this.game.rnd.angle();
-        // Make the sprite solid in the stage (and gravity has effect ...)
-        this.game.physics.enable(parachute, Phaser.Physics.ARCADE);
-        this.game.physics.arcade.collide(parachute);
-    };
+    this.levelText;
+    this.randomY;
 };
 BasicGame.Game.prototype = {
 
 	create: function () {
-        this.levelData  = this.game.global.levels[this.global.currentLevel];
+        
+        this.levelData  = this.game.global.levels[this.game.global.currentLevel];
         this.game.global.life = this.levelData.health;
         this.game.global.points = 0;
         this.totalParachutes = 0;
         this.falling    = [];
-        
+        this.randomY =
         timer = this.game.time.now + 100;
 
         // Background
-        this.add.sprite(this.width / 2, this.height / 2, 'background' + this.level);
+        this.add.sprite(this.width / 2, this.height / 2, 'background' + this.game.global.currentLevel);
         
         //  Set the stage (global) gravity
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
         this.game.physics.arcade.gravity.y = this.levelData.parachutes.gravity;
 
         // Score
-        this.font = { font: "28px Arial", fill: "#ffc500", align: "left" };
-        this.game.global.scoreText = this.game.add.text(40, 40, 'Score: 0', this.font);
+        this.font = { font: "20px Arial", fill: "#ffc500", align: "left" };
+        this.game.global.scoreText = this.game.add.text(20, 40, 'Score: 0', this.font);
         // Life
-        this.game.global.lifeText = this.game.add.text(40, 70, 'Life: '+ this.game.global.life, this.font);
+        this.game.global.lifeText = this.game.add.text(20, 60, 'Life: '+ this.game.global.life, this.font);
+        // Level
+        this.levelText = this.game.add.text(20 , 20, 'Level: '+ this.game.global.currentLevel, this.font);
         
         // boat                    x axis       y axis             index in Phaser cache
         boat = this.add.sprite(this.game.width / 2, this.game.height - 180, 'boat');
                 
         // parachute
-        parachute = new Parachute(this.game, this.game.world.randomY, this.game.height/2);
+        var y = this.world.randomY < 100 ? 100 : this.world.randomY > this.game.width * 0.9 ? this.game.width * 0.9 : this.world.randomY;
+        parachute = new Parachute(this.game, y , 0);
         // and add it to the game
         this.game.add.existing(parachute);
         this.falling.push(parachute);
@@ -74,17 +74,26 @@ BasicGame.Game.prototype = {
         boat.body.checkCollision.up = false; // Allow parachutes pass over
         boat.body.allowGravity = false; // Prevent from fall out of the bottom
         boat.body.collideWorldBounds = true;
+
+        // Music
+        if (this.add.audio('music'+ this.game.global.currentLevel)) {
+            this.music = this.add.audio('music'+ this.game.global.currentLevel);
+            this.music.loop = true;
+            this.music.play();
+        }
     },
 
 	update: function () {
         
 		//	Launch Parachutes
+        var fallingGroup = this.game.add.group();
         if (this.totalParachutes < this.levelData.parachutes.count && game.time.now < timer) {
             this.game.time.events.loop(3000, function () {
-                var parachute = new Parachute(this.game, this.game.world.randomY, this.game.height/2);
+                var y = this.world.randomY < 100 ? 100 : this.world.randomY > this.game.width * 0.9 ? this.game.width * 0.9 : this.world.randomY;
+                var parachute = new Parachute(this.game, y, 0);
                 this.game.add.existing(parachute);
-                this.launchMe(parachute);
                 this.falling.push(parachute);
+                fallingGroup.add(parachute);
             }, this);
         }
         
@@ -153,7 +162,7 @@ BasicGame.Game.prototype = {
         
         // Change level
         // This commented because in this sample, only one level is available
-        // this.game.global.currentLevel++;
+        this.game.global.currentLevel++;
         
         //	Then let's go to menu.
         this.state.start('NextLevel');
