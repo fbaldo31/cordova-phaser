@@ -20,7 +20,6 @@ var Parachute = function(game, x, y, frame) {
 
     this.animations.add('balance', [0, 1, 2, 3]);
     this.frame = 0;
-    console.log(this.animations);
     this.animations.play('balance', 3, true);
 };
 

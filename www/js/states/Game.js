@@ -40,7 +40,7 @@ BasicGame.Game.prototype = {
         this.game.global.points = 0;
         this.totalParachutes = 0;
         this.falling    = [];
-        this.randomY =
+        this.font = { font: "16px Arial", fill: "#000000", align: "left" };
         timer = this.game.time.now + 100;
 
         // Background
@@ -51,7 +51,6 @@ BasicGame.Game.prototype = {
         this.game.physics.arcade.gravity.y = this.levelData.parachutes.gravity;
 
         // Score
-        this.font = { font: "20px Arial", fill: "#ffc500", align: "left" };
         this.game.global.scoreText = this.game.add.text(20, 40, 'Score: 0', this.font);
         // Life
         this.game.global.lifeText = this.game.add.text(20, 60, 'Life: '+ this.game.global.life, this.font);
