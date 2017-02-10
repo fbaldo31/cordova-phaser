@@ -1,63 +1,111 @@
 
 BasicGame.MainMenu = function (game) {
 
-	// this.bg;
-	this.music = null;
 };
 
 BasicGame.MainMenu.prototype = {
 
-	create: function () {
+	create: function() {
 
-		this.music = this.add.audio('menuMusic');
-        this.music.loop = true;
-        this.music.play();
+		var game = this.game;
+		this.startTime = game.time.now;
 
-		// Background image
-		// this.bg = this.add.tileSprite(0, 0, this.game.width, this.game.height, 'menu_bg');
+		var image = this.game.cache.getImage('logo'),
+			centerX = this.world.centerX,
+			centerY = this.world.centerY - image.height,
+			endY    = this.world.height + image.height,
+			textPadding = this.game.device.desktop ? 60 : 30;
 
-		// Background color
-		this.game.stage.backgroundColor = "#6DCC61";
+		// Menu background
+		this.background = game.add.tileSprite(0, 0, this.world.width, this.world.height, 'menu_background');
+		this.background.autoScroll(-50, -20);
+		this.background.tilePosition.x = 0;
+		this.background.tilePosition.y = 0;
 
-		// Mountain
-		mountain = this.add.sprite(0, this.game.height /2, 'mountain');
-		
-		// Parachute 
-		parachute = this.add.sprite(this.game.width * 0.5, 180, 'para_menu');
+		// Add logo
+		var sprite = game.add.sprite(centerX, centerY - textPadding, 'logo');
+		sprite.anchor.set(0.5);
 
-		// boat                    x axis       y axis             index in Phaser cache
-		boat = this.add.sprite(this.game.width * 0.5, this.game.height - 180, 'boat');
+		if (this.game.device.desktop) {
+			sprite.scale.set(2);
+		}
 
-		var text = this.add.text(this.game.width * 0.5, this.game.height * 0.5, 'Tap to Start!', {
-			font: '42px Arial', fill: '#ffffff', align: 'center'
-		});
-		text.anchor.set(0.5);
+		// Add new game
+		var fontSize = (this.game.device.desktop ? '40px' : '20px');
+		var newGame = this.newGame = this.add.text(this.world.centerX,
+			centerY + textPadding,
+			"New game",
+			{
+				font: fontSize + " Architects Daughter",
+				align:"center",
+				fill:"#fff"
+			});
+		newGame.inputEnabled = true;
+		newGame.anchor.set(0.5);
 
-		this.input.onDown.add(this.startGame, this);
+		newGame.events.onInputOver.add(this.overNewgame, this);
+		newGame.events.onInputOut.add(this.outNewgame, this);
+		newGame.events.onInputDown.add(this.playGame, this);
 
+		var multiGame = this.multiGame =
+			this.add.text(this.world.centerX,
+				centerY + textPadding + newGame.height,
+				"New multiplayer game",
+				{
+					font: fontSize + " Arial", // Architects Daughter",
+					align:"center",
+					fill:"#fff"
+				});
+		multiGame.inputEnabled = true;
+		multiGame.anchor.set(0.5);
 
+		multiGame.events.onInputOver.add(this.overMultigame, this);
+		multiGame.events.onInputOut.add(this.outMultigame, this);
+		multiGame.events.onInputDown.add(this.playMultiGame, this);
+
+		// Juicy
+		// this.juicy = game.plugins.add(Phaser.Plugin.Juicy);
+		// this.screenFlash = this.juicy.createScreenFlash();
+		// this.add.existing(this.screenFlash);
+
+		// Music
+		this.menu_music = game.add.audio('menu_music');
+		this.dink       = game.add.audio('dink');
+		this.menu_music.play();
 	},
 
-	update: function () {
-
-		//	Do some nice funky main menu effect here
-
+	playGame: function() {
+		this.game.multiplayer = false;
+		this.menu_music.stop();
+		this.game.state.start('Game');
 	},
 
-	resize: function (width, height) {
-
-		//	If the game container is resized this function will be called automatically.
-		//	You can use it to align sprites that should be fixed in place and other responsive display things.
-
-		// this.bg.width = width;
-		// this.bg.height = height;
-
-
+	playMultiGame: function() {
+		this.game.multiplayer = true;
+		this.play();
 	},
 
-	startGame: function () {
-		this.music.stop();
-		this.state.start("Game");
+	overNewgame: function() {
+		this.game.add.tween(this.newGame.scale)
+			.to({x: 1.3, y: 1.3}, 300, Phaser.Easing.Exponential.Out, true);
+		this.dink.play();
+	},
+
+	overMultigame: function() {
+		this.game.add.tween(this.multiGame.scale)
+			.to({x: 1.3, y: 1.3}, 300, Phaser.Easing.Exponential.Out, true);
+		this.dink.play();
+	},
+
+	outMultigame: function() {
+		this.game.add.tween(this.multiGame.scale)
+			.to({x: 1, y: 1}, 300, Phaser.Easing.Exponential.Out, true);
+		this.dink.play();
+	},
+
+	outNewgame: function() {
+		this.game.add.tween(this.newGame.scale)
+			.to({x: 1, y: 1}, 300, Phaser.Easing.Exponential.Out, true);
 	}
 
 };

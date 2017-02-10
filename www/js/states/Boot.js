@@ -6,38 +6,75 @@ BasicGame.Boot = function (game) {
 
 BasicGame.Boot.prototype = {
 
+    resizeCanvasToContainerElement: function() {
+        var Game = game;
+
+        var canvas          = this.game.canvas,
+            containerWidth  = canvas.clientWidth,
+            containerHeight = canvas.clientHeight;
+
+        var xScale = containerWidth / this.width;
+        var yScale = containerHeight / this.height;
+        var newScale = Math.min( xScale, yScale );
+
+        this.scale.width = newScale * this.game.width;
+        this.scale.height = newScale * this.game.height;
+        // this.scale.setSize(containerWidth, containerHeight);
+
+        // Game.width  = this.game.width;
+        // Game.height = this.game.height;
+    },
     init: function () {
-
-        //  Unless you specifically know your game needs to support multi-touch I would recommend setting this to 1
         this.input.maxPointers = 1;
-
-        //  Phaser will automatically pause if the browser tab the game is in loses focus. You can disable that here:
         this.stage.disableVisibilityChange = true;
+        //
+        // if (this.game.device.desktop) {
+        //   this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+        //   // this.scale.setMinMax(480, 260, 2048, 1536);
+        //   // this.scale.pageAlignHorizontally = true;
+        //   // this.scale.pageAlignVertically = true;
+        // } else {
+        //   this.game.stage.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+        //   this.game.stage.scale.minWidth =  480;
+        //   this.game.stage.scale.minHeight = 260;
+        //   this.game.stage.scale.maxWidth = 640;
+        //   this.game.stage.scale.maxHeight = 480;
+        //   this.game.stage.scale.forceLandscape = true;
+        //   this.game.stage.scale.pageAlignHorizontally = true;
+        // }
 
-        //  This tells the game to resize the renderer to match the game dimensions (i.e. 100% browser width / height)
-        this.scale.scaleMode = Phaser.ScaleManager.RESIZE;
-        this.scale.setResizeCallback(function () {
-            this.scale.scaleMode = Phaser.ScaleManager.RESIZE;
-        }, this);
+        this.game.stage.scale.minWidth =  '100%';
+        this.game.stage.scale.minHeight = '100%';
+
+        this.scale.setResizeCallback(this.handleResizeEvent, this);
+
+        // this.scale.setScreenSize(true);
+        this.scale.refresh();
     },
-
-    preload: function () {
-
+    preload: function(){
         //  Here we load the assets required for our preloader (in this case a background and a loading bar)
-        //this.load.image('preloaderBackground', 'assets/images/preloader_background.jpg');
-        this.load.image('preloaderBar', 'assets/images/preloadr_bar.png');
+        this.load.image('menu_background', 'assets/menu_background.jpg');
+        this.load.image('preloader', 'assets/preloader.gif');
         this.load.json('levels', 'assets/levels.json');
-        // To load sprite sheets               we tell for each: height, width, number (optional)
-        this.load.spritesheet('parachute', 'assets/images/parachute.png', 50, 50);
-        this.load.image('boat', 'assets/images/boat.png');
     },
 
-    create: function () {
-
-        //  By this point the preloader assets have loaded to the cache, we've set the game settings
-        //  So now let's start the real preloader going
+    create: function(){
+        var Game = game;
+        if (this.game.device.desktop) {
+            this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL; //always show whole game
+            this.game.stage.scale.pageAlignHorizontally = true;
+        } else {
+            this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+            this.scale.forceLandscape = false;
+            this.scale.pageAlignHorizontally = true;
+        }
+        this.resizeCanvasToContainerElement();
+        Game.initialized = true;
         this.state.start('Preloader');
+    },
 
+    handleResizeEvent: function() {
+        this.resizeCanvasToContainerElement();
     }
 
 };

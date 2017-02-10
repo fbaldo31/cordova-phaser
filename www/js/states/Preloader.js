@@ -1,63 +1,136 @@
 
 BasicGame.Preloader = function (game) {
 
-	this.background = null;
-	this.preloadBar = null;
-	this.ready = false;
+	var asset = null;
+	var ready = false;
+
+	var WebFontConfig = {
+		//  The Google Fonts we want to load (specify as many as you like in the array)
+		google: {
+			families: ['Revalia', 'Architects Daughter']
+		}
+	};
 };
 
 BasicGame.Preloader.prototype = {
 
-	init: function () {
-		this.preloadBar = null;
-		this.ready = false;
-	},
-
 	preload: function () {
-		
-		//	These are the assets we loaded in Boot.js				
-		this.preloadBar = this.add.sprite(this.game.width / 2, this.game.height / 2, 'preloaderBar');		
-		this.preloadBar.anchor.setTo(0.5);
+		this.load.onLoadComplete.addOnce(this.onLoadComplete, this);
+		this.asset = this.add.sprite(this.world.centerX, this.world.centerY, 'preloader');
+		this.asset.anchor.setTo(0.5, 0.5);
+		this.load.setPreloadSprite(this.asset);
 
-		//	This sets the preloadBar sprite as a loader sprite.
-		//	What that does is automatically crop the sprite from 0 to full-width
-		//	as the files below are loaded in.
+		// Load the game levels
+		var Levels = this.game.Levels = this.game.cache.getJSON('levels');
 
-		this.load.setPreloadSprite(this.preloadBar);
-
-		//	Here we load the rest of the assets our game needs.
-		//	You can find all of these assets in the Phaser Examples repository
-
-		this.load.image('menu_bg', 'assets/images/menu_background.png');
-		this.load.image('logo', 'assets/images/logo.png');
-		this.load.image('para_menu', 'assets/images/para-menu.png');
-		this.load.image('water', 'assets/images/water.png');
-		this.load.image('mountain', 'assets/images/mountain.png');
-
-		// Load Levels config
-		this.game.global.levels = this.cache.getJSON('levels');
-		console.log(this.game.global.levels);
 		// Load level backgrounds
-		for (var i in this.game.global.levels) {
-			var stage = this.game.global.levels[i];
-			this.load.image('background'+i, stage.background);
+		for (var i in Levels) {
+			var obj = Levels[i];
+			this.load.image('background'+i, obj.background);
 		}
 
-		// Audio track Attribution 
-		this.load.audio('menuMusic', ['assets/audio/beat1.ogg']);
-		this.load.audio('music0', ['assets/audio/campfire.mp3']);
+		// Load fonts
+		// this.game.load.script('webfont', '//ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js');
+		// this.webfont[0] = { font: "16px assets/font/Revalia-Regular" };
+		// this.webfont[1] = { font: "16px assets/font/ArchitectDaughter" };
+		
+		// Load menu
+		this.load.image('logo', 'assets/logo.png');
+
+		// Load player sprites
+		this.load.image('hero', 'assets/player_blue.png');
+		this.load.image('shield', 'assets/shield.png');
+		this.load.image('player_green', 'assets/player_green.png');
+
+		this.load.image('laser_red', 'assets/laser_red.png');
+		this.load.image('laser_yellow', 'assets/laser_yellow.png');
+		this.load.image('laser_orange', 'assets/laser_orange.png');
+		this.load.image('laser_gray', 'assets/laser_gray.png');
+
+		// Load enemies
+		this.load.image('enemy_1', 'assets/enemy_1.png');
+		this.load.image('enemy_2', 'assets/enemy_2.png');
+		this.load.image('enemy_3', 'assets/enemy_3.png');
+
+		// Next level and gameover graphics
+		this.load.image('next_level', 'assets/levelcomplete-bg.png');
+		this.load.image('gameover', 'assets/gameover-bg.png');
+		this.load.image('new', 'assets/new.png');
+
+		this.load.spritesheet('btnMenu', 'assets/btn-menu.png', 190, 49, 2);
+		this.load.spritesheet('btn', 'assets/btn.png', 49, 49, 6);
+		this.load.spritesheet('num', 'assets/num.png', 12, 11, 5);
+		this.load.spritesheet('bonus', 'assets/bonus.png', 16, 16, 2);
+
+		// Numbers
+		this.load.image('num', 'assets/num.png');
+		this.load.image('lives', 'assets/lives.png');
+		this.load.image('panel', 'assets/panel.png');
+
+		this.load.image('laser', 'assets/laser.png');
+		this.load.image('bullet', 'assets/bullet.png');
+
+		// Audio
+		this.load.audio('laserFx', 'assets/laser_01.mp3');
+		this.load.audio('dink', 'assets/dink.mp3');
+		this.load.audio('menu_music', 'assets/menu_music.mp3');
+		this.load.audio('game_music', 'assets/game_music.mp3');
+
+		this.load.spritesheet('explosion', 'assets/explode.png', 128, 128, 16);
+
+		// Fonts
+		this.load.bitmapFont('assets/font/ArchitectDaughter',
+			'assets/fonts/r.png',
+			'assets/fonts/r.fnt');
+
+		// Finally, load the cached level, if there is one
+		this.game.currentLevel = 0;
+		if (localStorage.getItem('currentLevel')) {
+			this.game.currentLevel = localStorage.getItem('currentLevel');
+		}
 	},
 
 	create: function () {
+		this.asset.cropEnabled = false;
 
-		//this.state.start('MainMenu');
+		this.game.stage.backgroundColor = 0x2B3E42;
+		var tween = this.add.tween(this.asset)
+			.to({
+				alpha: 0
+			}, 500, Phaser.Easing.Linear.None, true);
+		tween.onComplete.add(this.startMainMenu, this);
+
+		// Load keyboard capture
+		var game = this.game;
+		this.game.cursors = game.input.keyboard.createCursorKeys();
+		var music = this.game.add.audio('galaxy');
+		// music.loop = true;
+		// music.play('');
+		window.music = music;
 	},
-	update: function () {
 
-		if (this.cache.isSoundDecoded('menuMusic') && this.ready == false) {
-			this.ready = true;
-			this.state.start('MainMenu');
+	startMainMenu: function() {
+		if (!!this.ready) {
+			if (this.game.mapId) {
+				this.game.state.start('Play');
+			} else {
+				this.game.state.start('MainMenu');
+			}
+			// this.game.state.start('Play');
+			// this.game.state.start('NextLevel');
 		}
+	},
+
+	toggleMusic: function() {
+		if (this.musicIsPlaying = !this.musicIsPlaying) {
+			music.stop();
+		} else {
+			music.play('');
+		}
+	},
+
+	onLoadComplete: function () {
+		this.ready = true;
 	}
 
 };
