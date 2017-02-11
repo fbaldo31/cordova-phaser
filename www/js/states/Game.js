@@ -30,6 +30,7 @@ BasicGame.Game = function (game) {
     this.falling;
     this.levelText;
     this.randomY;
+    this.watchID;
 };
 BasicGame.Game.prototype = {
 
@@ -41,10 +42,12 @@ BasicGame.Game.prototype = {
         this.totalParachutes = 0;
         this.falling    = [];
         this.font = { font: "16px Arial", fill: "#000000", align: "left" };
+        // this.watchID = navigator.compass.watchHeading(onSuccess, onError, options);
         timer = this.game.time.now + 100;
 
         // Background
-        this.add.sprite(this.width / 2, this.height / 2, 'background' + this.game.global.currentLevel);
+        var background = this.game.add.sprite(0, 0, 'background' + this.game.global.currentLevel);
+        //background.scale();
         
         //  Set the stage (global) gravity
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
@@ -58,8 +61,8 @@ BasicGame.Game.prototype = {
         this.levelText = this.game.add.text(20 , 20, 'Level: '+ this.game.global.currentLevel, this.font);
         
         // boat                    x axis       y axis             index in Phaser cache
-        boat = this.add.sprite(this.game.width / 2, this.game.height - 180, 'boat');
-                
+        boat = this.add.sprite(this.game.width / 2, this.game.height *0.95, 'boat');
+        
         // parachute
         var y = this.world.randomY < 100 ? 100 : this.world.randomY > this.game.width * 0.9 ? this.game.width * 0.9 : this.world.randomY;
         parachute = new Parachute(this.game, y , 0);
@@ -80,6 +83,7 @@ BasicGame.Game.prototype = {
             this.music.loop = true;
             this.music.play();
         }
+        // this.game.input.pointer1;
     },
 
 	update: function () {
@@ -95,8 +99,12 @@ BasicGame.Game.prototype = {
                 fallingGroup.add(parachute);
             }, this);
         }
+        this.falling.forEach(function (parachute, index) {
+            this.game.physics.arcade.collide(boat, parachute);
+        });
         
         // Move the boat
+        /** Gamepad / Computer keys */
         if (this.game.input.keyboard.isDown(Phaser.Keyboard.LEFT)) {
             boat.x -= 4;
             boat.scale.setTo(-1, 1);
@@ -105,13 +113,8 @@ BasicGame.Game.prototype = {
             boat.x += 4;
             boat.scale.setTo(1, 1);
         }
-        this.falling.forEach(function (parachute, index) {
-            this.game.physics.arcade.collide(boat, parachute);
-        });
-        
-        // Pause
-        // we wait fort tap event: callback reference      event
-        this.game.input.onDown.add(this.pauseOrResumeGame, this);
+        /** swipe event */
+        this.game.input.onDown.add(this.moveBoat, this);
 
         // Lose the stage
         if (this.game.global.life == 0){
@@ -120,16 +123,29 @@ BasicGame.Game.prototype = {
 
         // Win the stage
         if (this.game.global.points == this.levelData.minScore) {
-            this.gotToNextLevel();
+            this.goToNextLevel();
         }
 	},
+    moveBoat: function (event) {
+        console.log('swipe: ', event);
+        
+        if (event.x < boat.x) { // Move left
+            boat.x -= 4;
+            boat.scale.setTo(-1, 1);
+        }
+        else if (event.x > boat.x) { // Move right
+            boat.x += 4;
+            boat.scale.setTo(1, 1);
+        }
+    },
     /**
      *  Display data on screen
      *  Uncomment these lines for debug data of sprites
      */
     render: function () {
         
-        //this.game.debug.bodyInfo(boat);
+        // this.game.debug.pointer(this.game.input.pointer1);
+        // this.game.debug.bodyInfo(boat);
         
         // this.falling.forEach(function (value, index) {
         //     if (value.body.onCollide) {
@@ -146,13 +162,19 @@ BasicGame.Game.prototype = {
         this.falling.forEach(function (parachute, index) {
             parachute.destroy();
         });
+        
+        // Clear watching device acceleration
+        if (this.watchID != undefined) {
+            navigator.accelerometer.clearWatch(this.watchID);
+        }
+        
 		//	Then let's go back to the main menu.
 		this.state.start('GameOver');
 	},
     pauseOrResumeGame: function (event){
         this.game.paused = !this.game.paused;
     },
-    gotToNextLevel: function (pointer) {
+    goToNextLevel: function (pointer) {
         // destroy all sprites
         boat.destroy();
         this.falling.forEach(function (parachute, index) {
@@ -165,5 +187,28 @@ BasicGame.Game.prototype = {
         
         //	Then let's go to menu.
         this.state.start('NextLevel');
-    }
+    },
+    /**
+     * When got the current position of the device
+     */
+    /*accelerometerSuccess: function (acceleration) {
+        // var oldValue = this.game.global.accelerometer.x;
+        console.log('Acceleration Z: ' + acceleration.z);
+        console.log('old Z: ' + this.game.global.accelerometer.z);
+
+        if (acceleration.x > boat.x) {
+            // Move on right
+            boat.x += 4;
+            boat.scale.setTo(1, 1);
+        } else if (acceleration.x < boat.x) {
+            // Move on left
+            boat.x -= 4;
+            boat.scale.setTo(-1, 1);            
+        }
+        this.game.global.accelerometer = acceleration;        
+    },
+    accelerometerError: function (error) {
+        console.log('acceleroError: ' + error.code);
+        this.quitGame();
+    }*/
 };

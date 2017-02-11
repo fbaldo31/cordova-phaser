@@ -8,7 +8,9 @@ game.global = {
 	life: 100,
 	scoreText: {},
 	lifeText: {},
-	currentLevel: 0
+	currentLevel: 0,
+	accelerometer: {},
+	device: '' // mobile, desktop
 };
 
 //	Add the States your game has.
@@ -21,9 +23,16 @@ game.global = {
 	game.state.add('Game', BasicGame.Game);
 
 function onDeviceReady() {
-    // Now safe to use device APIs    
-    //	Now start the Boot state.
+	console.log(navigator.maxTouchPoints);
+
+	if (navigator.maxTouchPoints > 0) {
+		game.global.device = 'mobile';
+	} else {
+		// Here we assume touching device is not available
+		game.global.device = 'desktop';
+	}
+    // navigator.accelerometer.getCurrentAcceleration(accelerometerSuccess, accelerometerError);
+    
+	//	Now start the Boot state.
 	game.state.start('Boot');
 }
-
-
